@@ -15,7 +15,6 @@ class JobPortalApp extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final router = ref.watch(appRouterProvider);
     return MaterialApp.router(title: 'Mini Job Portal', routerConfig: router);
   }
 }

@@ -13,7 +13,7 @@ class LoginController extends StateNotifier<AsyncValue<void>> {
 
   LoginController(this._localDataSource) : super(const AsyncData(null));
 
-  Future<void> login(String email, String password) async {
+  Future<bool> login(String email, String password) async {
     state = const AsyncLoading();
     await Future.delayed(const Duration(seconds: 1));
 
@@ -25,5 +25,6 @@ class LoginController extends StateNotifier<AsyncValue<void>> {
     await _localDataSource.saveUser(user);
 
     state = const AsyncData(null);
+    return true;
   }
 }

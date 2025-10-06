@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mini_job_portal_demo/core/utils/app_colors.dart';
 import 'package:mini_job_portal_demo/core/utils/responsive.dart';
+import 'package:mini_job_portal_demo/core/utils/router.dart';
 import '../state/login_state.dart';
 
 class LoginPage extends ConsumerStatefulWidget {
@@ -26,9 +27,12 @@ class _LoginPageState extends ConsumerState<LoginPage> {
 
   Future<void> _handleLogin() async {
     if (_formKey.currentState?.validate() ?? false) {
-      await ref
+      final success = await ref
           .read(loginStateProvider.notifier)
           .login(_emailController.text.trim(), _passwordController.text);
+      if (success) {
+        router.pushReplacementNamed(AppRoutes.homePage);
+      }
     }
   }
 
