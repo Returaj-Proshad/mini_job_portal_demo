@@ -1,16 +1,35 @@
-# mini_job_portal_demo
+# Mini Job Portal Demo
 
-A new Flutter project.
+A modern Flutter job portal application with beautiful UI and smooth animations.
+
+## Features
+
+- **Job Listings** - Browse available job opportunities
+- **Job Details** - View complete job information
+- **Saved Jobs** - Bookmark jobs for later
+- **User Profile** - Manage your account and view stats
+- **Modern Design** - Clean, professional interface
 
 ## Getting Started
 
-This project is a starting point for a Flutter application.
+1. Clone the repository
+2. Run `flutter pub get` to install dependencies
+3. Run `flutter run` to start the app
 
-A few resources to get you started if this is your first Flutter project:
+## Tech Stack
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+- Flutter
+- Riverpod (State Management)
+- Go Router (Navigation)
+- Hive (Local Storage)
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## Screens
+
+- Splash Screen
+- Login Page
+- Job List Page
+- Job Details Page
+- Profile Page
+- Saved Jobs Page
+
+Built with ❤️ by Returaj Proshad Shornocar
