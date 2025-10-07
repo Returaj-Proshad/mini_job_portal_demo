@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:mini_job_portal_demo/core/services/storage_service.dart';
 import 'package:mini_job_portal_demo/core/utils/router.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Hive.initFlutter();
+  await StorageService().init();
   await Hive.openBox('userBox');
   runApp(const ProviderScope(child: JobPortalApp()));
 }

@@ -1,14 +1,41 @@
+// job_model.dart
+import 'package:hive/hive.dart';
+
+part 'job_model.g.dart';
+
+@HiveType(typeId: 0)
 class JobModel {
+  @HiveField(0)
   final int id;
+
+  @HiveField(1)
   final String title;
+
+  @HiveField(2)
   final String company;
+
+  @HiveField(3)
   final String location;
+
+  @HiveField(4)
   final String salary;
+
+  @HiveField(5)
   final String description;
+
+  @HiveField(6)
   final String type;
+
+  @HiveField(7)
   final String experience;
+
+  @HiveField(8)
   final List<String> skills;
+
+  @HiveField(9)
   final DateTime postedDate;
+
+  @HiveField(10)
   final bool isRemote;
 
   JobModel({

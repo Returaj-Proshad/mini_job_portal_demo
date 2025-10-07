@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mini_job_portal_demo/core/utils/app_colors.dart';
 import 'package:mini_job_portal_demo/core/utils/responsive.dart';
+import 'package:mini_job_portal_demo/core/utils/router.dart';
 import 'package:mini_job_portal_demo/features/home/models/job_model.dart';
 import 'package:mini_job_portal_demo/features/home/widgets/details_section.dart';
 import 'package:mini_job_portal_demo/features/home/widgets/overview_section.dart';
+import 'package:mini_job_portal_demo/features/saved_job/state/saved_jobs_provider.dart';
 
 class JobDetails extends ConsumerStatefulWidget {
   final JobModel job;
@@ -17,6 +19,44 @@ class JobDetails extends ConsumerStatefulWidget {
 
 class _JobDetailsState extends ConsumerState<JobDetails> {
   bool _isApplying = false;
+  bool _isSaved = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _checkIfSaved();
+  }
+
+  void _checkIfSaved() {
+    _isSaved = ref.read(savedJobsProvider.notifier).isJobSaved(widget.job.id);
+  }
+
+  void _toggleSaveJob() {
+    setState(() {
+      _isSaved = !_isSaved;
+    });
+
+    if (_isSaved) {
+      ref.read(savedJobsProvider.notifier).saveJob(widget.job);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('${widget.job.title} saved to your jobs'),
+          backgroundColor: Colors.green,
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+      router.pushNamed(AppRoutes.savedJobsPage);
+    } else {
+      ref.read(savedJobsProvider.notifier).removeJob(widget.job.id);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('${widget.job.title} removed from saved jobs'),
+          backgroundColor: Colors.orange,
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+    }
+  }
 
   void _showApplyDialog() {
     showDialog(
@@ -47,6 +87,7 @@ class _JobDetailsState extends ConsumerState<JobDetails> {
               ElevatedButton(
                 onPressed: () {
                   Navigator.pop(context);
+
                   _submitApplication();
                 },
                 style: ElevatedButton.styleFrom(
@@ -69,16 +110,7 @@ class _JobDetailsState extends ConsumerState<JobDetails> {
     setState(() {
       _isApplying = false;
     });
-
-    if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Application submitted for ${widget.job.title}'),
-          backgroundColor: Colors.green,
-          behavior: SnackBarBehavior.floating,
-        ),
-      );
-    }
+    _toggleSaveJob();
   }
 
   @override
@@ -96,8 +128,8 @@ class _JobDetailsState extends ConsumerState<JobDetails> {
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                     colors: [
-                      AppColors.primaryColor.withValues(alpha: .8),
-                      AppColors.primaryColor.withValues(alpha: .4),
+                      AppColors.primaryColor.withOpacity(0.8),
+                      AppColors.primaryColor.withOpacity(0.4),
                     ],
                   ),
                 ),
@@ -132,12 +164,17 @@ class _JobDetailsState extends ConsumerState<JobDetails> {
             pinned: true,
             actions: [
               IconButton(
-                icon: const Icon(Icons.bookmark_border, color: Colors.white),
-                onPressed: () {},
+                icon: Icon(
+                  _isSaved ? Icons.bookmark : Icons.bookmark_border,
+                  color: Colors.white,
+                ),
+                onPressed: _toggleSaveJob,
               ),
               IconButton(
                 icon: const Icon(Icons.share, color: Colors.white),
-                onPressed: () {},
+                onPressed: () {
+                  _shareJob();
+                },
               ),
             ],
           ),
@@ -155,7 +192,7 @@ class _JobDetailsState extends ConsumerState<JobDetails> {
                   const SizedBox(height: 32),
                   DetailsSection(job: widget.job),
                   const SizedBox(height: 40),
-                  _buildApplyButton(),
+                  _buildActionButtons(),
                 ],
               ),
             ),
@@ -208,7 +245,7 @@ class _JobDetailsState extends ConsumerState<JobDetails> {
                     vertical: 8,
                   ),
                   decoration: BoxDecoration(
-                    color: AppColors.primaryColor.withValues(alpha: 0.1),
+                    color: AppColors.primaryColor.withOpacity(0.1),
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: Text(
@@ -225,34 +262,51 @@ class _JobDetailsState extends ConsumerState<JobDetails> {
     );
   }
 
-  Widget _buildApplyButton() {
-    return SizedBox(
-      width: double.infinity,
-      child: ElevatedButton(
-        onPressed: _isApplying ? null : _showApplyDialog,
-        style: ElevatedButton.styleFrom(
-          backgroundColor: AppColors.primaryColor,
-          foregroundColor: Colors.white,
-          padding: const EdgeInsets.symmetric(vertical: 16),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
+  Widget _buildActionButtons() {
+    return Row(
+      children: [
+        Expanded(
+          flex: 2,
+          child: ElevatedButton(
+            onPressed: _isApplying ? null : _showApplyDialog,
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.primaryColor,
+              foregroundColor: Colors.white,
+              padding: const EdgeInsets.symmetric(vertical: 16),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+              elevation: 2,
+            ),
+            child:
+                _isApplying
+                    ? const SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                      ),
+                    )
+                    : const Text(
+                      'Apply Now',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
           ),
-          elevation: 2,
         ),
-        child:
-            _isApplying
-                ? const SizedBox(
-                  width: 20,
-                  height: 20,
-                  child: CircularProgressIndicator(
-                    strokeWidth: 2,
-                    valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                  ),
-                )
-                : const Text(
-                  'Apply for this Job',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-                ),
+      ],
+    );
+  }
+
+  void _shareJob() {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Share functionality coming soon!'),
+        backgroundColor: Colors.blue,
+        behavior: SnackBarBehavior.floating,
       ),
     );
   }
