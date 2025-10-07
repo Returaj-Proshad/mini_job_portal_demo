@@ -1,8 +1,10 @@
+// home_page.dart (updated)
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mini_job_portal_demo/core/global_widgets/error_states.dart';
 import 'package:mini_job_portal_demo/core/global_widgets/loading_state.dart';
 import 'package:mini_job_portal_demo/core/utils/app_colors.dart';
+import 'package:mini_job_portal_demo/core/utils/router.dart';
 import 'package:mini_job_portal_demo/features/home/state/home_state.dart';
 import 'package:mini_job_portal_demo/features/home/widgets/job_list_view.dart';
 
@@ -33,6 +35,10 @@ class _HomePageState extends ConsumerState<HomePage> {
         _scrollController.position.maxScrollExtent) {}
   }
 
+  void _navigateToProfile() {
+    router.pushNamed(AppRoutes.profilePage);
+  }
+
   @override
   Widget build(BuildContext context) {
     final jobsState = ref.watch(homeStateProvider);
@@ -46,7 +52,10 @@ class _HomePageState extends ConsumerState<HomePage> {
         foregroundColor: Colors.black,
         actions: [
           IconButton(icon: const Icon(Icons.search), onPressed: () {}),
-          IconButton(icon: const Icon(Icons.filter_list), onPressed: () {}),
+          IconButton(
+            icon: const Icon(Icons.person),
+            onPressed: _navigateToProfile,
+          ),
         ],
       ),
       body: RefreshIndicator(
